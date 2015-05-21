@@ -21,10 +21,12 @@
 package org.sonar.server.computation.step;
 
 import org.junit.Test;
+import org.sonar.api.config.Settings;
 import org.sonar.batch.protocol.output.BatchReportReader;
 import org.sonar.core.component.ComponentDto;
 import org.sonar.core.resource.ResourceIndexerDao;
 import org.sonar.server.computation.ComputationContext;
+import org.sonar.server.db.DbClient;
 
 import static org.mockito.Mockito.*;
 
@@ -37,7 +39,7 @@ public class IndexComponentsStepTest extends BaseStepTest {
   public void call_indexProject_of_dao() {
     ComponentDto project = mock(ComponentDto.class);
     when(project.getId()).thenReturn(123L);
-    ComputationContext context = new ComputationContext(mock(BatchReportReader.class), project);
+    ComputationContext context = new ComputationContext(mock(BatchReportReader.class), project, new Settings(), mock(DbClient.class));
 
     sut.execute(context);
 

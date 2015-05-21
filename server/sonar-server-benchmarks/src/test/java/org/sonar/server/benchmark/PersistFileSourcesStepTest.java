@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.config.Settings;
 import org.sonar.api.utils.System2;
 import org.sonar.api.utils.internal.Uuids;
 import org.sonar.batch.protocol.Constants;
@@ -76,7 +77,7 @@ public class PersistFileSourcesStepTest {
     long start = System.currentTimeMillis();
 
     PersistFileSourcesStep step = new PersistFileSourcesStep(dbClient, System2.INSTANCE);
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), ComponentTesting.newProjectDto(PROJECT_UUID)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), ComponentTesting.newProjectDto(PROJECT_UUID), new Settings(), dbClient));
 
     long end = System.currentTimeMillis();
     long duration = end - start;

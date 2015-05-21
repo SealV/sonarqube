@@ -78,7 +78,7 @@ public class IndexSourceLinesStepTest extends BaseStepTest {
     FileSourceTesting.updateDataColumn(connection, "FILE1_UUID", FileSourceTesting.newRandomData(1).build());
     connection.close();
 
-    step().execute(new ComputationContext(mock(BatchReportReader.class), ComponentTesting.newProjectDto("ABCD")));
+    step().execute(new ComputationContext(mock(BatchReportReader.class), ComponentTesting.newProjectDto("ABCD"), new Settings(), dbClient));
 
     List<SearchHit> docs = esTester.getDocuments(SourceLineIndexDefinition.INDEX, SourceLineIndexDefinition.TYPE);
     assertThat(docs).hasSize(1);

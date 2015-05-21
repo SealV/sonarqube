@@ -48,7 +48,7 @@ public class PurgeDatastoresStepTest extends BaseStepTest {
     ComponentDto project = mock(ComponentDto.class);
     when(project.getId()).thenReturn(123L);
     when(project.uuid()).thenReturn("UUID-1234");
-    ComputationContext context = new ComputationContext(mock(BatchReportReader.class), project);
+    ComputationContext context = new ComputationContext(mock(BatchReportReader.class), project, new Settings(), mock(DbClient.class));
 
     sut.execute(context);
 

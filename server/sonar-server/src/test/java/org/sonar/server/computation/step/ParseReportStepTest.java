@@ -23,6 +23,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.config.Settings;
 import org.sonar.batch.protocol.Constants;
 import org.sonar.batch.protocol.output.BatchReport;
 import org.sonar.batch.protocol.output.BatchReportReader;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.sonar.server.db.DbClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -61,7 +63,7 @@ public class ParseReportStepTest extends BaseStepTest {
   public void extract_report_from_db_and_browse_components() throws Exception {
     File reportDir = generateReport();
 
-    ComputationContext context = new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class));
+    ComputationContext context = new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), new Settings(), mock(DbClient.class));
     sut.execute(context);
 
     assertThat(context.getReportMetadata().getRootComponentRef()).isEqualTo(1);

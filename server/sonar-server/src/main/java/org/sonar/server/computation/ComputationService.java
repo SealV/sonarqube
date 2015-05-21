@@ -24,6 +24,7 @@ import com.google.common.base.Throwables;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.ServerSide;
+import org.sonar.api.config.Settings;
 import org.sonar.api.utils.System2;
 import org.sonar.api.utils.TempFolder;
 import org.sonar.api.utils.ZipUtils;
@@ -89,8 +90,8 @@ public class ComputationService {
       if (isSnapshotMissing(item, reader.readMetadata().getSnapshotId())) {
         return;
       }
-      ComputationContext context = new ComputationContext(reader, project);
-      context.setProjectSettings(projectSettingsFactory.newProjectSettings(project.getId()));
+      Settings projectSettings = projectSettingsFactory.newProjectSettings(project.getId());
+      ComputationContext context = new ComputationContext(reader, project, projectSettings, dbClient);
       for (ComputationStep step : steps.orderedSteps()) {
         if (ArrayUtils.contains(step.supportedProjectQualifiers(), context.getProject().qualifier())) {
           Profiler stepProfiler = Profiler.createIfDebug(LOG).startDebug(step.getDescription());

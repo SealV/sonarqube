@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.batch.protocol.Constants;
 import org.sonar.batch.protocol.output.BatchReport;
@@ -57,6 +58,8 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
   @ClassRule
   public static DbTester dbTester = new DbTester();
 
+  Settings projectSettings = new Settings();
+  DbClient dbClient = mock(DbClient.class);
   DbSession session;
 
   ComponentLinkDao dao;
@@ -127,7 +130,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .addLink(BatchReport.ComponentLink.newBuilder().setType(Constants.ComponentLinkType.SCM).setHref("https://github.com/SonarSource/sonar/server").build())
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "add_links_on_project_and_module-result.xml", "project_links");
   }
@@ -151,7 +154,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .addLink(BatchReport.ComponentLink.newBuilder().setType(Constants.ComponentLinkType.HOME).setHref("http://www.sonarqube.org").build())
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "nothing_to_do_when_link_already_exists.xml", "project_links");
   }
@@ -175,7 +178,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .addLink(BatchReport.ComponentLink.newBuilder().setType(Constants.ComponentLinkType.HOME).setHref("http://www.sonarqube.org").build())
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     assertThat(dbTester.countRowsOfTable("project_links")).isEqualTo(0);
   }
@@ -199,7 +202,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .addLink(BatchReport.ComponentLink.newBuilder().setType(Constants.ComponentLinkType.HOME).setHref("http://www.sonarqube.org").build())
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "update_link-result.xml", "project_links");
   }
@@ -222,7 +225,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .setUuid("ABCD")
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     assertThat(dbTester.countRowsOfTable("project_links")).isEqualTo(0);
   }
@@ -245,7 +248,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .setUuid("ABCD")
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "not_delete_custom_link.xml", "project_links");
   }
@@ -271,7 +274,7 @@ public class PersistProjectLinksStepTest extends BaseStepTest {
       .build());
 
     try {
-      step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+      step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
       failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Link of type 'homepage' has already been declared on component 'ABCD'");

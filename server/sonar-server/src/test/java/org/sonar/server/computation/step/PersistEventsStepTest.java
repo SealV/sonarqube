@@ -23,6 +23,7 @@ package org.sonar.server.computation.step;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.config.Settings;
 import org.sonar.api.utils.System2;
 import org.sonar.batch.protocol.Constants;
 import org.sonar.batch.protocol.output.BatchReport;
@@ -52,6 +53,8 @@ public class PersistEventsStepTest extends BaseStepTest {
   public static DbTester dbTester = new DbTester();
 
   DbSession session;
+  Settings projectSettings = new Settings();
+  DbClient dbClient = mock(DbClient.class);
 
   EventDao dao;
 
@@ -104,7 +107,7 @@ public class PersistEventsStepTest extends BaseStepTest {
       .setUuid("ABCD")
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "nothing_to_do_when_no_events_in_report.xml", "events");
   }
@@ -140,7 +143,7 @@ public class PersistEventsStepTest extends BaseStepTest {
       )
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "add_events-result.xml", "events");
   }
@@ -182,7 +185,7 @@ public class PersistEventsStepTest extends BaseStepTest {
           .build()
       ).build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "persist_report_events_with_component_children-result.xml", "events");
   }
@@ -207,7 +210,7 @@ public class PersistEventsStepTest extends BaseStepTest {
       .setVersion("1.0")
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "add_version_event-result.xml", "events");
   }
@@ -232,7 +235,7 @@ public class PersistEventsStepTest extends BaseStepTest {
       .setVersion("1.5-SNAPSHOT")
       .build());
 
-    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class)));
+    step.execute(new ComputationContext(new BatchReportReader(reportDir), mock(ComponentDto.class), projectSettings, dbClient));
 
     dbTester.assertDbUnit(getClass(), "keep_one_event_by_version-result.xml", "events");
   }

@@ -79,7 +79,7 @@ public class IndexTestsStepTest extends BaseStepTest {
     TestTesting.updateDataColumn(connection, "FILE1_UUID", TestTesting.newRandomTests(1));
     connection.close();
 
-    step().execute(new ComputationContext(mock(BatchReportReader.class), ComponentTesting.newProjectDto("ABCD")));
+    step().execute(new ComputationContext(mock(BatchReportReader.class), ComponentTesting.newProjectDto("ABCD"), new Settings(), dbClient));
 
     List<SearchHit> docs = esTester.getDocuments(TestIndexDefinition.INDEX, TestIndexDefinition.TYPE);
     assertThat(docs).hasSize(1);

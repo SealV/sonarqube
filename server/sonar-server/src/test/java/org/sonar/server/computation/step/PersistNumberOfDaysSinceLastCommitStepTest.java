@@ -25,6 +25,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.config.Settings;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.api.utils.System2;
 import org.sonar.batch.protocol.Constants;
@@ -57,12 +58,14 @@ public class PersistNumberOfDaysSinceLastCommitStepTest extends BaseStepTest {
 
   PersistNumberOfDaysSinceLastCommitStep sut;
 
+  Settings projectSettings;
   DbClient dbClient;
   SourceLineIndex sourceLineIndex;
   MetricCache metricCache;
 
   @Before
   public void setUp() throws Exception {
+    projectSettings = new Settings();
     dbClient = new DbClient(db.database(), db.myBatis(), new MeasureDao());
     sourceLineIndex = mock(SourceLineIndex.class);
     metricCache = mock(MetricCache.class);
@@ -91,7 +94,7 @@ public class PersistNumberOfDaysSinceLastCommitStepTest extends BaseStepTest {
         )
         .build()
       );
-    ComputationContext context = new ComputationContext(new BatchReportReader(dir), ComponentTesting.newProjectDto("project-uuid"));
+    ComputationContext context = new ComputationContext(new BatchReportReader(dir), ComponentTesting.newProjectDto("project-uuid"), projectSettings, dbClient);
 
     sut.execute(context);
 
@@ -103,7 +106,7 @@ public class PersistNumberOfDaysSinceLastCommitStepTest extends BaseStepTest {
     Date sixDaysAgo = DateUtils.addDays(new Date(), -6);
     when(sourceLineIndex.lastCommitDateOnProject("project-uuid")).thenReturn(sixDaysAgo);
     initReportWithProjectAndFile();
-    ComputationContext context = new ComputationContext(new BatchReportReader(dir), ComponentTesting.newProjectDto("project-uuid"));
+    ComputationContext context = new ComputationContext(new BatchReportReader(dir), ComponentTesting.newProjectDto("project-uuid"), projectSettings, dbClient);
 
     sut.execute(context);
 
@@ -113,7 +116,7 @@ public class PersistNumberOfDaysSinceLastCommitStepTest extends BaseStepTest {
   @Test
   public void no_scm_information_in_report_and_index() {
     initReportWithProjectAndFile();
-    ComputationContext context = new ComputationContext(new BatchReportReader(dir), ComponentTesting.newProjectDto("project-uuid"));
+    ComputationContext context = new ComputationContext(new BatchReportReader(dir), ComponentTesting.newProjectDto("project-uuid"), projectSettings, dbClient);
 
     sut.execute(context);
 

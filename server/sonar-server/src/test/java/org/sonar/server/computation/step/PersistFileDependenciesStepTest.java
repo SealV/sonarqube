@@ -20,12 +20,16 @@
 
 package org.sonar.server.computation.step;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.System2;
 import org.sonar.batch.protocol.Constants;
@@ -39,10 +43,6 @@ import org.sonar.server.component.ComponentTesting;
 import org.sonar.server.computation.ComputationContext;
 import org.sonar.server.db.DbClient;
 import org.sonar.server.design.db.FileDependencyDao;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -87,7 +87,7 @@ public class PersistFileDependenciesStepTest extends BaseStepTest {
       .setRootComponentRef(1)
       .setSnapshotId(PROJECT_SNAPSHOT_ID)
       .build());
-    context = new ComputationContext(new BatchReportReader(reportDir), ComponentTesting.newProjectDto(PROJECT_UUID));
+    context = new ComputationContext(new BatchReportReader(reportDir), ComponentTesting.newProjectDto(PROJECT_UUID), new Settings(), dbClient);
 
     sut = new PersistFileDependenciesStep(dbClient, system2);
   }
@@ -144,7 +144,7 @@ public class PersistFileDependenciesStepTest extends BaseStepTest {
         .setToFileRef(5)
         .setWeight(1)
         .build()
-    ));
+      ));
 
     sut.execute(context);
 

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.sonar.api.config.Settings;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.Severity;
 import org.sonar.batch.protocol.Constants;
@@ -136,7 +137,7 @@ public class PersistMeasuresStepTest extends BaseStepTest {
         .setCharactericId(123456)
         .build()));
 
-    sut.execute(new ComputationContext(new BatchReportReader(dir), mock(ComponentDto.class)));
+    sut.execute(new ComputationContext(new BatchReportReader(dir), mock(ComponentDto.class), new Settings(), dbClient));
 
     ArgumentCaptor<MeasureDto> argument = ArgumentCaptor.forClass(MeasureDto.class);
     verify(measureDao, times(2)).insert(any(DbSession.class), argument.capture());
