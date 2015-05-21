@@ -1,0 +1,22 @@
+{
+  "metrics": [
+    {
+      "id": "23",
+      "key": "org.apache.hbas:hbase",
+      "name": "HBase",
+      "description":"",
+      "domain":"",
+      "type":"INT",
+      "operations":""
+    },
+    {
+      "uuid": "c526ef20-131b-4486-9357-063fa64b5079",
+      "key": "com.microsoft.roslyn:roslyn",
+      "name": "Roslyn",
+      "creationDate": "2013-03-04T23:03:44+0100"
+    }
+  ],
+  "total": 2,
+  "p": 1,
+  "ps": 100
+}
